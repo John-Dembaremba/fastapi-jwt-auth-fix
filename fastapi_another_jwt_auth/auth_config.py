@@ -55,6 +55,7 @@ class AuthConfig:
     @classmethod
     def load_config(cls, settings: Callable[...,List[tuple]]) -> "AuthConfig":
         try:
+            print("=============+>>>>>Hit")
             config = LoadConfig(**{key.lower():value for key,value in settings()})
 
             cls._token_location = config.authjwt_token_location

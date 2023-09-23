@@ -2,7 +2,7 @@ import pytest, os, jwt
 from fastapi_another_jwt_auth import AuthJWT
 from fastapi import FastAPI, Depends
 from fastapi.testclient import TestClient
-from pydantic import BaseSettings, ValidationError
+from pydantic import BaseModel, ValidationError
 from typing import Sequence, Optional
 from datetime import timedelta
 
@@ -60,7 +60,7 @@ def test_default_config():
     assert AuthJWT._csrf_methods == {'POST','PUT','PATCH','DELETE'}
 
 def test_token_expired_false(Authorize):
-    class TokenFalse(BaseSettings):
+    class TokenFalse(BaseModel):
         authjwt_secret_key: str = "testing"
         authjwt_access_token_expires: bool = False
         authjwt_refresh_token_expires: bool = False
@@ -90,7 +90,7 @@ def test_secret_key_not_exist(client,Authorize):
 
 def test_denylist_enabled_without_callback(client):
     # set authjwt_secret_key for create token
-    class SettingsOne(BaseSettings):
+    class SettingsOne(BaseModel):
         authjwt_secret_key: str = "secret-key"
         # AuthJWT denylist won't trigger if value not True
         authjwt_denylist_enabled: bool = False
@@ -106,7 +106,7 @@ def test_denylist_enabled_without_callback(client):
     response = client.get('/protected',headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
-    class SettingsTwo(BaseSettings):
+    class SettingsTwo(BaseModel):
         authjwt_secret_key: str = "secret-key"
         authjwt_denylist_enabled: bool = True
         authjwt_denylist_token_checks: list = ["access"]
@@ -130,7 +130,7 @@ def test_load_env_from_outside():
         PUBLIC_KEY = f.read().strip()
 
     # correct data
-    class Settings(BaseSettings):
+    class Settings(BaseModel):
         authjwt_token_location: list = ['cookies']
         authjwt_secret_key: str = "testing"
         authjwt_public_key: str = PUBLIC_KEY

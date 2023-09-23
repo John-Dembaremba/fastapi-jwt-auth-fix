@@ -15,7 +15,7 @@ def validate_denylist_token_checks(v):
     return v
 
 def validate_token_location(v):
-    if v not in ['headers','cookies']:
+    if v[0] not in ['headers','cookies']:
         raise ValueError("The 'authjwt_token_location' must be between 'headers' or 'cookies'")
     return v
 
